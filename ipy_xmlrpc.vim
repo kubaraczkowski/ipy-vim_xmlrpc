@@ -1,13 +1,14 @@
+" commented for now, no customized environments yet, he
 if !exists("$IPY_SESSION")
     finish
 endif
 
 " set up the python interpreter within vim, to have all the right modules
 " imported, as well as certain useful globals set
-python import socket
+python import xmlrpclib
 python import os
 python import vim
-python from IPython.Debugger import Pdb
+"python from IPython.Debugger import Pdb
 python IPYSERVER = None
 python reselect = True
 
@@ -15,7 +16,7 @@ python << EOF
 # do we have a connection to the ipython instance?
 def check_server():
     global IPYSERVER
-    if IPYSERVER:
+    if IPYSERVER is not None:
         return True
     else:
         return False
@@ -26,8 +27,10 @@ def connect():
     if check_server():
         return
     try:
-        IPYSERVER = socket.socket(socket.AF_UNIX)
-        IPYSERVER.connect(os.environ.get('IPY_SERVER'))
+        #IPYSERVER = xmlrpclib.ServerProxy('http://localhost:9876')
+        IPYSERVER = xmlrpclib.ServerProxy(os.environ.get('IPY_SERVER'))
+        # this is fixed for now
+        #        IPYSERVER.connect(os.environ.get('IPY_SERVER'))
     except:
         IPYSERVER = None
 
@@ -36,13 +39,7 @@ def disconnect():
         IPYSERVER.close()
 
 def send(cmd):
-    x = 0
-    while True:
-        x += IPYSERVER.send(cmd)
-        if x < len(cmd):
-            cmd = cmd[x:]
-        else:
-            break
+    IPYSERVER.send(cmd)
 
 def run_this_file():
     if check_server():
@@ -131,6 +128,7 @@ fun! <SID>toggle_send_on_save()
 endfun
 
 map <silent> <F5> :python run_this_file()<CR>
+"map <silent> <F5> :python run_this_line()<CR>
 map <silent> <F4> :python run_these_lines(mode='norm')<CR>
 vmap <silent> <F4> :python run_these_lines(mode='vis')<CR>
 map <silent> <C-F6> :python send('%pdb')<CR>

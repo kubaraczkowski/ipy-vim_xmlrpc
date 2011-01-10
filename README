@@ -1,0 +1,12 @@
+ipy_vimserver_xmlrpc adds simple connectivity between IPython and VIM.
+
+This project is a fork from the original ipy_vimserver, which is embedded in
+newest IPython releases. However, an important difference is applied here, 
+namely the use of xmlrpc protocol for communication instead of low-level 
+sockets.
+The difference is portability. This finally works under Windows.
+
+Tested under Windows 7 with vim_without_cream and python2.6 and linux (eeebuntu)
+
+Hope somebody finds it useful!
+KR
