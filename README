@@ -1,12 +1,48 @@
 ipy_vimserver_xmlrpc adds simple connectivity between IPython and VIM.
 
 This project is a fork from the original ipy_vimserver, which is embedded in
-newest IPython releases. However, an important difference is applied here, 
-namely the use of xmlrpc protocol for communication instead of low-level 
-sockets.
+newest IPython releases. You can find it in launchpad at 
+lp:~pivanov/ipython/devel
+
+However, an important difference is applied here, namely the use of xmlrpc
+protocol for communication instead of low-level sockets.
 The difference is portability. This finally works under Windows.
+
+IMPORTANT
+the pdb does not work for the moment in my system. being tested... 
+(any help?) 
 
 Tested under Windows 7 with vim_without_cream and python2.6 and linux (eeebuntu)
 
+
+==========================
+Usage
+
+Put the ipy_xmlrpc.vim file in ~/.vim/plugin/ or ~/vimfiles/plugin (windows)
+
+inside ipython do:
+
+import ipy_vimserver_xmlrpc	# maybe put it in  convienient place
+ipy_vimserver_xmlrpc.setup()	# start the server. takes two arguments
+				# port (default: 0 =automatic)
+				# logging (defualt: False) logging to console
+
+edit somefile.py		# this starts gvim with connectivity
+
+
+The useable shortcuts are for the moment as in the old ipy_vimserver implementation:
+<F4> run these lines (visual selection)
+<F5> run this file
+<C-F6> start pdb
+<F6> set breakpoint
+<s-F6> clear breakpoint
+<F7> run the file in pdb
+<s-F7> clear all breakpoints
+<F9> toggle run file on save 
+<S-F9> toggle reselect after send
+<C-F5> toggle run on save
+
+
 Hope somebody finds it useful!
 KR
+
