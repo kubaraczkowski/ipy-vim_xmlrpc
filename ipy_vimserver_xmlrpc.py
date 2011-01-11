@@ -74,6 +74,8 @@ def setup(port = 0,logging = False,fork = True):
         socketname = SERVER.get_socket_name()
         vimhook.vimserver = "IPYS_RPC"
         vimhook.ipyserver = socketname
+        if fork:
+            vimhook.fork_gvim = '-f'
         SERVER.start()
 
 
@@ -100,15 +102,18 @@ def vimhook(self, fname, line):
 
     if line is None: line = ''
     else: line = '+' + line
-    vim_cmd = 'gvim --servername %s %s %s %s' % (vimhook.vimserver, vimargs,
+    vim_cmd = 'gvim %s --servername %s %s %s %s' % (vimhook.fork_gvim,vimhook.vimserver, vimargs,
         line, fname)
     subprocess.call(vim_cmd, env=env, shell=True)
+    print 'came out of editor'
 
 
 #default values to keep it sane...
 vimhook.vimserver = ''
 vimhook.ipyserver = ''
+vimhook.fork_gvim = ''
 
+ip=IPython.ipapi.get()
 ip.set_hook('editor',vimhook)
 
 
