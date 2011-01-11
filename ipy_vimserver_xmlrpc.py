@@ -62,7 +62,7 @@ def shutdown(self):
     if SERVER:
         SERVER.kill()
 
-def setup(port = 0,logging = False,fork = True):
+def setup(port = 0,logging = False,fork_gvim = False):
     """ Sets up the connection. In practice it starts the server 
         on a first available port (therefore the 0).
     """
@@ -74,8 +74,8 @@ def setup(port = 0,logging = False,fork = True):
         socketname = SERVER.get_socket_name()
         vimhook.vimserver = "IPYS_RPC"
         vimhook.ipyserver = socketname
-        if fork:
-            vimhook.fork_gvim = '-f'
+        if fork_gvim:
+            vimhook.fork_gvim = ''
         SERVER.start()
 
 
@@ -111,7 +111,7 @@ def vimhook(self, fname, line):
 #default values to keep it sane...
 vimhook.vimserver = ''
 vimhook.ipyserver = ''
-vimhook.fork_gvim = ''
+vimhook.fork_gvim = '-f'
 
 ip=IPython.ipapi.get()
 ip.set_hook('editor',vimhook)
