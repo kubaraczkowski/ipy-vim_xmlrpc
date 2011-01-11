@@ -26,12 +26,17 @@ import ipy_vimserver_xmlrpc	# maybe put it in  convienient place
 ipy_vimserver_xmlrpc.setup()	# start the server. takes two arguments
 				# port (default: 0 =automatic)
 				# logging (defualt: False) logging to console
+				# fork_gvim (default: False) should gvim hold 
+				#       Ipython or not (default of IP is to wait
+				#       for the editor, then run the code.
+				#       With current functionality it might be
+				#       Useless
 
 edit somefile.py		# this starts gvim with connectivity
 
 
 The useable shortcuts are for the moment as in the old ipy_vimserver implementation:
-<F4> run these lines (visual selection)
+<F4> run this line OR run these lines (visual selection)
 <F5> run this file
 <C-F6> start pdb
 <F6> set breakpoint
