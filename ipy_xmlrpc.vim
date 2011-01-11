@@ -43,10 +43,10 @@ def send(cmd):
 
 def run_this_file():
     if check_server():
-        send('run  %s' % (vim.current.buffer.name,))
+        send('run  %s' % (get_proper_filename(),))
     else:
         raise Exception, "Not connected to an IPython server"
-    print "\'run %s\' sent to ipython" % vim.current.buffer.name
+    print "\'run %s\' sent to ipython" % get_proper_filename()
 
 def run_this_line():
     if check_server():
@@ -55,23 +55,30 @@ def run_this_line():
     else:
         raise Exception, "Not connected to an IPython server"
 
+def get_proper_filename():
+    # turn on shellslashing
+    vim.command('set ssl')
+    filename = vim.current.buffer.name # proper one with slashes
+    return filename
+
 def run_these_lines(mode='norm'):
     if check_server():
         r = vim.current.range
-        #send(str((vim.current.range.start,vim.current.range.end)))
-        for l in vim.current.buffer[r.start:r.end+1]:
-            send(str(l)+'\n')
-            #send(str(vim.current.buffer[vim.current.range.start:vim.current.range.end]).join("\n"))
-        if mode == 'norm':
-            print "line %d sent to ipython"% (r.start+1)
-        elif mode == 'vis':
-            #reselect the previously highlighted block
-            if reselect:
-                vim.command("normal gv")
-            #vim lines start with 1
-            print "lines %d-%d sent to ipython"% (r.start+1,r.end+1)
+        if r.start == r.end:
+            run_this_line()
         else:
-            raise Exception, "mode not recognized"
+            for l in vim.current.buffer[r.start:r.end+1]:
+                send(str(l)+'\n')
+            if mode == 'norm':
+                print "line %d sent to ipython"% (r.start+1)
+            elif mode == 'vis':
+                #reselect the previously highlighted block
+                if reselect:
+                    vim.command("normal gv")
+                #vim lines start with 1
+                print "lines %d-%d sent to ipython"% (r.start+1,r.end+1)
+            else:
+                raise Exception, "mode not recognized"
     else:
         raise Exception, "Not connected to an IPython server"
 
@@ -82,18 +89,18 @@ def toggle_reselect():
 
 def set_breakpoint():
     if check_server():
-        send("__IP.InteractiveTB.pdb.set_break('%s',%d)" % (vim.current.buffer.name,
+        send("__IP.InteractiveTB.pdb.set_break('%s',%d)" % (get_proper_filename(),
                                                             vim.current.window.cursor[0]))
-        print "set breakpoint in %s:%d"% (vim.current.buffer.name, 
+        print "set breakpoint in %s:%d"% (get_proper_filename(), 
                                           vim.current.window.cursor[0])
     else:
         raise Exception, "Not connected to an IPython server"
     
 def clear_breakpoint():
     if check_server():
-        send("__IP.InteractiveTB.pdb.clear_break('%s',%d)" % (vim.current.buffer.name,
+        send("__IP.InteractiveTB.pdb.clear_break('%s',%d)" % (get_proper_filename(),
                                                               vim.current.window.cursor[0]))
-        print "clearing breakpoint in %s:%d" % (vim.current.buffer.name,
+        print "clearing breakpoint in %s:%d" % (get_proper_filename(),
                                                 vim.current.window.cursor[0])
     else:
         raise Exception, "Not connected to an IPython server"
@@ -107,10 +114,10 @@ def clear_all_breakpoints():
 
 def run_this_file_pdb():
     if check_server():
-        send(' __IP.InteractiveTB.pdb.run(\'execfile("%s")\')' % (vim.current.buffer.name,))
+        send(' __IP.InteractiveTB.pdb.run(\'execfile("%s")\')' % (get_proper_filename(),))
     else:
         raise Exception, "Not connected to an IPython server"
-    print "\'run %s\' using pdb sent to ipython" % vim.current.buffer.name
+    print "\'run %s\' using pdb sent to ipython" % get_proper_filename()
 
     #XXX: have IPYSERVER print the prompt (look at Leo example)
 EOF
