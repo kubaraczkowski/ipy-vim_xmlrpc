@@ -14,7 +14,7 @@ import os, threading, subprocess
 
 global SERVER
 SERVER = None # this will become the server port number
-ip = IPython.ipapi.get()  # initialize connection to IPython
+#ip = IPython.ipapi.get()  # initialize connection to IPython
 
 class IpyServerXMLRPC(threading.Thread):
     def __init__(self, port=9876, logging = False):
@@ -23,6 +23,9 @@ class IpyServerXMLRPC(threading.Thread):
         self.setDaemon(True)
         self.server = SimpleXMLRPCServer(("localhost",port),logRequests=logging)
         self.server.register_function(self.send)
+        self.server.register_function(self.test_pylab)
+        if logging:
+            print "setup complete at: %s port %d" % self.get_socket_name()
 
     def run(self):
         """ The main worker of the threa. No separate loop as it is already present in serve_forever()""" 
@@ -35,8 +38,13 @@ class IpyServerXMLRPC(threading.Thread):
         cmds = list()
         for line in data:
             cmds.append(line)
+        ip=IPython.ipapi.get()
         ip.runlines(cmds)
         return len(cmds)
+    def test_pylab(self):
+        ip=IPython.ipapi.get()
+        ip.runlines('a = logspace(1,10,101)')
+        ip.runlines('print a')
 
     def kill(self):
         """ Kills the server. Should be run from a separate thread, such as the ipython thread.
@@ -45,7 +53,7 @@ class IpyServerXMLRPC(threading.Thread):
         self.server.shutdown()
         raise IPython.ipapi.TryNext 
     def get_socket_name(self):
-        return SERVER.server.socket.getsockname()
+        return self.server.socket.getsockname()
 
 def shutdown(self):
     """ Shuts down the server. 
@@ -54,7 +62,7 @@ def shutdown(self):
     if SERVER:
         SERVER.kill()
 
-def setup(port = 0,logging = False):
+def setup(port = 0,logging = False,fork = True):
     """ Sets up the connection. In practice it starts the server 
         on a first available port (therefore the 0).
     """
